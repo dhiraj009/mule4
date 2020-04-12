@@ -1,0 +1,10 @@
+{
+  "sampleData": {
+    "3c63b556-9e27-44b6-b521-c15d6abb0a83": {
+      "vars-date": "sample_data/defaultstringtype.dwl"
+    },
+    "8dd31f4a-483b-4e8e-9692-6660a80ab98d": {
+      "vars-state": "sample_data/defaultstringtype_1.dwl"
+    }
+  }
+}

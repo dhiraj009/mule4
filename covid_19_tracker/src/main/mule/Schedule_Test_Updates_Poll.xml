@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="Schedule_Test_Updates_PollFlow" doc:id="0aa0cf2e-d091-4f1b-a4cd-697a4f366c14" >
+		<scheduler doc:name="Scheduler" doc:id="05f74f29-71c1-443b-9ab1-b31208036d3d" >
+			<scheduling-strategy >
+				<cron expression="0 00 6 ? * *"/>
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Logger" doc:id="fdbdb0b0-495f-4601-a258-334233929705" message="Test Updates Started"/>
+		<flow-ref doc:name="Flow Reference" doc:id="3d4fc1f1-0418-41a4-be28-1cfab9f5cf10" name="testsStatsFlow" target="result"/>
+		<set-payload value="#[vars.result]" doc:name="Set Payload" doc:id="5ada8b31-e239-404e-a19b-e45b4f611856" />
+	</flow>
+</mule>

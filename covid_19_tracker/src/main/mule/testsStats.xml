@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<flow name="testsStatsFlow" doc:id="4526bd8a-ca5f-4c55-867c-79765b5d3f41" >
+		<http:listener doc:name="Listener" doc:id="b7cf9270-4981-4521-a0b8-d04f0c24201c" config-ref="HTTP_Listener_config" path="/test"/>
+		<set-variable value='#[attributes.queryParams.Date as String  default (now()-|P1D|) as String {format: "dd/MM/yyyy"}]' doc:name="Set Variable" doc:id="1d945d19-2cf9-4d24-93fa-29222328aa8e" variableName="date"/>
+		<http:request method="GET" doc:name="Request" doc:id="45fa4a3a-5f2e-46d9-b875-20cccc9209c5" config-ref="Covid19_ORG_Request_configuration" path="/data.json"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8393e5be-7149-4e33-bf75-c4ebfb999b5e" message="#[vars.date]"/>
+		<ee:transform doc:name="Transform Message" doc:id="ea2a0423-1455-4ce2-bbc6-d98d8cc935c3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.tested filter $.updatetimestamp[0 to 9] as String == vars.date[0 to 9] as String
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="15dff3d2-bd46-4432-9a07-a128a99c8d13" message=" After Transform #[payload]"/>
+		<set-payload value='#["Today Positive Cases =" ++ payload[0].positivecasesfromsamplesreported as String ++  
+" Today Samples Reported =" ++ payload[0].samplereportedtoday as String ++
+" Source =&lt;a href=" ++ payload[0].source as String ++ "&gt;Source&lt;/a&gt;" ++
+" Private Labs Tests =" ++ payload[0].testsconductedbyprivatelabs as String ++
+" Total Tested =" ++ payload[0].totalindividualstested as String ++ 
+" Total Positive Cases =" ++ payload[0].totalpositivecases as String ++
+" Total Samples Tested =" ++ payload[0].totalsamplestested as String ++
+" Timestamp =" ++ payload[0].updatetimestamp as String]' doc:name="Set Payload" doc:id="cc23671d-5fe5-48bc-a19c-57322ad03570" mimeType="text/html"/>
+		<async doc:name="Async" doc:id="ee372120-cc23-430f-8a0d-349aacb8a100" >
+			<email:send doc:name="Send" doc:id="9f523121-ac10-4b0a-a110-c34298f3a3ba" config-ref="Gmail_SMTP" fromAddress="dhiraj58333@gmail.com" subject='#["Covid 19 Test Update " ++ now() as String {format: "yy-MM-dd"}]'>
+				<email:to-addresses >
+					<email:to-address value="dhirajkumar.singh@incture.com" />
+				</email:to-addresses>
+			</email:send>
+		</async>
+	</flow>
+</mule>

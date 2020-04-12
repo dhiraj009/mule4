@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<flow name="stateWiseCasesFlow" doc:id="6c0ce470-55b1-408e-8374-46c08145a58b" >
+		<http:listener doc:name="Listener" doc:id="f6c9ca5f-b10e-48f7-88cc-cffe6db31e39" config-ref="HTTP_Listener_config" path="/state"/>
+		<set-variable value="#[attributes.queryParams.State as String   default 'Total']" doc:name="Set Variable" doc:id="bfa4cee3-e5a7-4dfe-904e-248c8f33a39b" variableName="state"/>
+		<http:request method="GET" doc:name="Request" doc:id="188bc4cd-9638-461c-8de4-59e039a15d59" config-ref="Covid19_ORG_Request_configuration" path="/data.json"/>
+		<ee:transform doc:name="Transform Message" doc:id="8dd31f4a-483b-4e8e-9692-6660a80ab98d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.statewise filter $.state == vars.state
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="db3a4d87-306a-4c1d-9890-44459a7d1cfa" message="After Transform #[payload]"/>
+		<set-payload value='#["Total Active Cases =" ++ payload[0].active as String ++  
+" Total Confirmed Cases =" ++ payload[0].confirmed as String ++
+" Total Deaths =" ++ payload[0].deaths as String ++ 
+" Total Delta Confirmed Cases =" ++ payload[0].deltaconfirmed as String ++
+" Total Delta Death Cases =" ++ payload[0].deltadeaths as String ++
+" Total Delta Recovered Cases =" ++ payload[0].deltarecovered as String ++
+" Last Updated Time =" ++ payload[0].lastupdatedtime as String ++
+" Total Recovered =" ++ payload[0].recovered as String ++ 
+" State =" ++ payload[0].state as String ++
+" State Code =" ++ payload[0].statecode as String]' doc:name="Set Payload" doc:id="de4d5e3e-a30a-4be9-9e92-3225fd3b709f" mimeType="text/plain"/>
+		<async doc:name="Async" doc:id="c1943ee4-faa1-49e5-814d-0591cf9b36e2" >
+			<email:send doc:name="Send" doc:id="9f1e93fb-eae0-4b2d-bd47-72497693fde9" config-ref="Gmail_SMTP" fromAddress="dhiraj58333@gmail.com" subject='#["Covid 19 " ++ vars.state ++ " Update " ++ now() as String {format: "yy-MM-dd"}]'>
+				<email:to-addresses >
+					<email:to-address value="dhirajkumar.singh@incture.com" />
+				</email:to-addresses>
+			</email:send>
+		</async>
+	</flow>
+</mule>

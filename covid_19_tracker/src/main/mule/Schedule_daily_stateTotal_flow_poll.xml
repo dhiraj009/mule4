@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<flow name="Schedule_daily_stateTotal_flow_pollFlow" doc:id="a9d6458f-83ab-4783-a0ad-dbf40956042f" >
+		<scheduler doc:name="Scheduler" doc:id="b972d791-560f-4b98-adc2-2907a32410fd" >
+			<scheduling-strategy >
+				<cron expression="0 00 6 ? * *" />
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Logger" doc:id="048fcef6-9788-4c15-add8-25724cd3eb5e" message="States Total Update Started"/>
+		<flow-ref doc:name="Flow Reference" doc:id="98fe753c-bbe5-4d50-9938-fc94667c3b6d" name="stateWiseCasesFlow" target="result"/>
+		<set-payload value="#[vars.result]" doc:name="Set Payload" doc:id="e7e230d8-8364-4977-9a9b-3ea0489a9836" mimeType="text/plain"/>
+	</flow>
+</mule>

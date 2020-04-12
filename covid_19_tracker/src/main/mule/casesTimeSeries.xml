@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dbb8e7fa-2552-4101-819d-99b5aace5613" basePath="/api/covid">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="Covid19_ORG_Request_configuration" doc:name="HTTP Request configuration" doc:id="60f8c11c-8e20-4836-afc3-09e259e30970" >
+		<http:request-connection protocol="HTTPS" host="api.covid19india.org" port="443" />
+	</http:request-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="df7e26b8-2ce5-427e-8c5c-95681267564d" >
+		<email:smtp-connection host="smtp.office365.com" port="465" user="dhirajkumar.singh@incture.com" password="wrong" />
+	</email:smtp-config>
+	<email:smtp-config name="Gmail_SMTP" doc:name="Email SMTP" doc:id="03fcc4ca-92a8-4123-8ddb-7df713eb01d1" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="dhiraj58333@gmail.com" password="onlyformovies" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="casesTimeSeriesFlow" doc:id="fa61bbbc-6328-4a1e-aa47-c926264a8715" >
+		<http:listener doc:name="Listener" doc:id="97887cf8-5c01-49eb-b9db-c8b95333e420" config-ref="HTTP_Listener_config" path="/timeseries"/>
+		<set-variable value='#[attributes.queryParams.Date as String ++ " " default (now().day as String ++ now().month as String)]' doc:name="Set Variable" doc:id="cb26ab6d-5e0d-4953-b224-d1c0bf430e76" variableName="date"/>
+		<http:request method="GET" doc:name="Request" doc:id="04cf5509-4330-47d9-bab9-57cf9c7e9335" config-ref="Covid19_ORG_Request_configuration" path="/data.json"/>
+		<ee:transform doc:name="Transform Message" doc:id="3c63b556-9e27-44b6-b521-c15d6abb0a83" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.cases_time_series filter $.date == vars.date
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="24dad284-0e3e-40f3-b1d0-3fe09178f265" message="Before Transform #[payload]"/>
+		<set-payload value='#["Today Cases =" ++ payload[0].dailyconfirmed as String ++  
+" Today Deceased =" ++ payload[0].dailydeceased as String ++
+" Today Recovered =" ++ payload[0].dailyrecovered as String ++ 
+" Date =" ++ payload[0].date as String ++
+" Total Cases =" ++ payload[0].totalconfirmed as String ++ 
+" Total Deceased =" ++ payload[0].totaldeceased as String ++
+" Total Recovered =" ++ payload[0].totalrecovered as String]' doc:name="Set Payload" doc:id="1bcf8472-9a29-48ea-a437-00bf36db0a1f" mimeType="text/plain"/>
+		<async doc:name="Async" doc:id="0719b342-e81b-4ae7-b388-ad7a65c5b007" >
+			<email:send doc:name="Send" doc:id="ed88739d-d901-44b5-b943-ce0a5ffcebb3" config-ref="Gmail_SMTP" fromAddress="dhiraj58333@gmail.com" subject='#["Covid 19 Update " ++ now() as String {format: "yy-MM-dd"}]'>
+				<email:to-addresses >
+					<email:to-address value="dhirajkumar.singh@incture.com" />
+				</email:to-addresses>
+				
+				
+			</email:send>
+		</async>
+	</flow>
+</mule>
