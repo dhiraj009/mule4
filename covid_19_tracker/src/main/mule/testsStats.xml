@@ -21,7 +21,7 @@ payload.tested filter $.updatetimestamp[0 to 9] as String == vars.date[0 to 9] a
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="15dff3d2-bd46-4432-9a07-a128a99c8d13" message=" After Transform #[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="15dff3d2-bd46-4432-9a07-a128a99c8d13" message=" After Transform  #[payload]"/>
 		<set-payload value='#["Today Positive Cases =" ++ payload[0].positivecasesfromsamplesreported as String ++  
 " Today Samples Reported =" ++ payload[0].samplereportedtoday as String ++
 " Source =&lt;a href=" ++ payload[0].source as String ++ "&gt;Source&lt;/a&gt;" ++
