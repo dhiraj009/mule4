@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cc2049c6-3519-4f1c-8338-62f274d5d6ae" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8082" >
+			<tls:context >
+				<tls:key-store type="jks" path="server-keystore.jks" keyPassword="mulesoft" password="mulesoft" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="6340c81c-4932-4bca-b320-c5e3b9caccc5" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration_client" doc:name="HTTP Request configuration" doc:id="ee057170-ccb9-4fd5-b884-5ac8ddc17a0f" >
+		<http:request-connection protocol="HTTPS" host="localhost" port="8082" >
+			<tls:context >
+				<tls:trust-store path="client-truststore.jks" password="mulesoft" type="jks"/>
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="http-one-way-sslFlow_server" doc:id="8380ac42-fe51-45f5-8907-efb334c1590e" >
+		<http:listener doc:name="Listener" doc:id="5766a9e6-1d38-42cd-9148-dbee5c351159" config-ref="HTTP_Listener_config" path="/oneway"/>
+		<set-payload value="#['Tested SuccessFully']" doc:name="Set Payload" doc:id="f0dbcee9-3ae2-483b-8177-9a296c24c18e" />
+	</flow>
+	<flow name="http-one-way-sslFlow_client" doc:id="45c379f6-386f-40f1-bee0-4f8ac727d84f" >
+		<http:listener doc:name="Listener" doc:id="c8cb9a1a-2e75-4013-9b44-0092fe4738de" config-ref="HTTP_Listener_config1" path="/onewayclient"/>
+		<http:request method="GET" doc:name="Request" doc:id="663c80b8-0afb-4900-b1d1-5f6189553f15" config-ref="HTTP_Request_configuration_client" path="/oneway"/>
+	</flow>
+</mule>
