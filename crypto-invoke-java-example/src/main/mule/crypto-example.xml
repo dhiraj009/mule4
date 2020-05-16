@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="crypto-exampleFlow" doc:id="e331c069-9547-4e11-85cb-01acffca8643" >
+		<ee:transform doc:name="Hmac Binary" doc:id="554b0910-07c3-4f30-b998-ce50f85e0b5f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import dw::Crypto
+output application/json
+---
+{
+	"HmacBinary": Crypto::HMACBinary("mulesoft" as Binary , "This is Mulesoft" as Binary)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Hmac With" doc:id="ecdcb0bf-0158-41cf-8cec-e2d156436e3c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import dw::Crypto
+output application/json
+---
+{
+	"Hmac256": Crypto::HMACWith("mulesoft" as Binary , "This is Mulesoft" as Binary, "HmacSHA256"),
+	"Hmac512": Crypto::HMACWith("mulesoft" as Binary , "This is Mulesoft" as Binary, "HmacSHA512")
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="MD5" doc:id="50a9d57d-b6b2-4603-99f9-8e11c2f4fe99" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import dw::Crypto
+output application/json
+---
+{
+	"MD5": Crypto::MD5("mulesoft" as Binary)
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="SHA1" doc:id="6c0647f6-072c-4eb6-9a5d-6e04144282c8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import dw::Crypto
+output application/json
+---
+{
+	"SHA1": Crypto::SHA1("mulesoft" as Binary)
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

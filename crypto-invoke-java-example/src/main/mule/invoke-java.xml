@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="invoke-javaFlow" doc:id="915f1a3e-2bd3-46e0-b1e2-d82cac240b2b" >
+		<scheduler doc:name="Scheduler" doc:id="29ac357f-2564-48ad-90ed-c37a9cd5aa73" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="25000"/>
+			</scheduling-strategy>
+		</scheduler>
+		<ee:transform doc:name="Transform Message" doc:id="68693adf-85d4-4ab2-bd93-7c53675c3688" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import java!com::example::AppendData
+output application/json
+---
+{
+	name: AppendData::appendHello("Mulesoft")
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
