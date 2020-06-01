@@ -11,38 +11,22 @@ protocols:
   get:
     displayName: State
     queryParameters:
-      State:
+      State?:
         description: Provides statewise Covid Data
-        type:
-          anyOf:
-            -
-              type: string
-            -
-              type: number
-              format: int
+        example: Kerala
+        type: string
     responses:
       "200":
         body:
           text/plain:
             example: "\"Total Active Cases =95 Total Confirmed Cases =500 Total Deaths =4 Total Delta Confirmed Cases =0 Total Delta Death Cases =0 Total Delta Recovered Cases =1 Last Updated Time =03/05/2020 17:32:46 Total Recovered =401 State =Kerala State Code =KL\""
             type: string
-    securedBy: []
 /test:
   get:
     displayName: Test
-    description: Test Results Report
+    description: Test Result Reports.
     queryParameters:
-      Date:
-        type:
-          anyOf:
-            -
-              type: string
-            -
-              type: datetime
-              format: rfc3339
-            -
-              type: number
-              format: int
-    securedBy: []
-securedBy: []
-baseUri: http://covid-19-tracker.us-e2.cloudhub.io/api/covid
+      Date?:
+        example: 31/05/2020
+        type: string
+baseUri: http://covid-19-tracker-app.us-e2.cloudhub.io/api/covid
