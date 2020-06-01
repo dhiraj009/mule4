@@ -7,8 +7,8 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="a43bce4d-e709-4b56-bea8-45e86d4fd940" file="app.properties" key="mulesoftintegration" />
-	<api-gateway:autodiscovery apiId="16133339" doc:name="API Autodiscovery" doc:id="40293621-9b75-452a-b83a-58cbade7c38a" flowRef="get:\state:covid_19_tracker-config" />
-	<api-gateway:autodiscovery apiId="16133339" doc:name="API Autodiscovery" doc:id="b878e978-be33-42ad-9f22-166909d7f8e9" flowRef="get:\test:covid_19_tracker-config" />
+	<api-gateway:autodiscovery apiId="${apiid}" doc:name="API Autodiscovery" doc:id="40293621-9b75-452a-b83a-58cbade7c38a" flowRef="get:\state:covid_19_tracker-config" />
+	<api-gateway:autodiscovery apiId="${apiid}" doc:name="API Autodiscovery" doc:id="b878e978-be33-42ad-9f22-166909d7f8e9" flowRef="get:\test:covid_19_tracker-config" />
 	<error-handler name="globalError_Handler" doc:id="4bdaac6a-c9fb-4e39-a7ae-1d9131b104a6" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="79669b08-bcc0-4ce4-a078-520c78dbc76e" type="ANY">
 			<ee:transform doc:name="Transform Message" doc:id="59ad9717-73fd-405b-8897-78ceff7ebef2" >
