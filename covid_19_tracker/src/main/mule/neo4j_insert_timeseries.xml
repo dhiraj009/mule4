@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:neo4j="http://www.mulesoft.org/schema/mule/neo4j"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/neo4j http://www.mulesoft.org/schema/mule/neo4j/current/mule-neo4j.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<neo4j:config name="Neo4j_Config" doc:name="Neo4j Config" doc:id="178e3e9d-a32d-4071-9433-871bb5acb6fc" >
+		<neo4j:connection username="neo4j" password="Neo4j" boltUrl="bolt://localhost:11007" restUrl="https://localhost:11009" />
+	</neo4j:config>
+	<flow name="neo4j_inserttimeseriesFlow" doc:id="87aa5a01-6e48-460a-b901-8ff5bb45a643" >
+		<scheduler doc:name="Scheduler" doc:id="fb73c5e2-dec1-4ca7-87b2-3e130ff537ab" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="1" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="Request" doc:id="b1d60cba-3686-44c5-be1a-a4d2c3c1368c" config-ref="Covid19_ORG_Request_configuration" path="/data.json"/>
+		<ee:transform doc:name="Transform Message" doc:id="965ca633-7b1d-436f-b7eb-3e4552a02092" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	{
+		"name": "ABC",
+		"ID": "123"
+	}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<neo4j:create-node label="TestInsert" doc:name="Create node" doc:id="c4510c20-44ab-4b3d-aa52-44b2d770be04" config-ref="Neo4j_Config">
+			<neo4j:input ><![CDATA[#[payload]]]></neo4j:input>
+		</neo4j:create-node>
+		<logger level="INFO" doc:name="Logger" doc:id="baf8e6a8-b0dc-4274-a90e-3e833ac7cf92" message="DB output #[payload]"/>
+	</flow>
+</mule>
